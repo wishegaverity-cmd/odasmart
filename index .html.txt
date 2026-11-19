@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="OdaSmart" />
+  <title>OdaSmart Global - Business & Order Super-App</title>
+  <script src="https://tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    .glass { background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .hide-scroll::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex justify-center min-h-screen">
+
+  <div id="app" class="w-full max-w-md bg-stone-50 min-h-screen shadow-2xl flex flex-col relative pb-24">
+    
+    <!-- Top Header: Royal Sapphire & Emerald -->
+    <header class="bg-gradient-to-br from-slate-900 via-blue-950 to-emerald-900 text-white p-5 rounded-b-3xl shadow-xl">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <p class="text-[11px] text-amber-300 uppercase tracking-widest font-bold">OdaSmart Global 🌍</p>
+          <h1 id="bizNameDisplay" class="text-xl font-bold">Biashara Yangu</h1>
+        </div>
+        <div class="flex gap-1.5 items-center">
+          <button onclick="toggleLang()" id="langBtn" class="glass px-2.5 py-1.5 rounded-full text-xs font-extrabold text-amber-300 active:scale-95 transition">
+            🇹🇿 SW / 🇬🇧 EN
+          </button>
+          <select id="currencySelect" onchange="changeCurrency()" class="glass px-2 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white outline-none">
+            <option value="TZS">TZS</option>
+            <option value="USD">USD</option>
+            <option value="KES">KES</option>
+            <option value="UGX">UGX</option>
+          </select>
+          <button onclick="togglePrivacy()" class="glass p-2 rounded-full text-xs active:scale-95 transition">👁️</button>
+        </div>
+      </div>
+
+      <!-- VIP Wallet Card -->
+      <div class="glass rounded-2xl p-4 shadow-inner">
+        <div class="flex justify-between items-center">
+          <div>
+            <p id="lblTotalSales" class="text-xs text-blue-100">Mauzo ya Jumla</p>
+            <h2 id="totalSalesDisplay" class="text-2xl font-extrabold text-amber-300 mt-0.5">TZS 0</h2>
+          </div>
+          <div class="text-right">
+            <p id="lblNetProfit" class="text-xs text-emerald-200">Faida Halisi</p>
+            <p id="netProfitDisplay" class="text-sm font-bold text-white mt-0.5">TZS 0</p>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-t border-white/15 flex justify-between text-xs">
+          <span>⏳ <span id="lblPending">Zinazosubiri</span>: <strong id="pendingCount">0</strong></span>
+          <span class="text-rose-200">⚠️ <span id="lblDebt">Madeni</span>: <strong id="totalDebtDisplay">TZS 0</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="p-4 flex-1 space-y-4">
+
+      <!-- TAB 1: HOME -->
+      <section id="tab-home" class="space-y-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+          <div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+            <span id="lblGoal">🎯 Lengo la Siku (200,000)</span>
+            <span id="targetPercent" class="text-emerald-700">0%</span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-2.5">
+            <div id="targetBar" class="bg-gradient-to-r from-blue-600 to-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Quick Tools Row -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="switchTab('tools')" class="bg-blue-950 text-white p-3.5 rounded-2xl text-left shadow-sm active:scale-95 transition">
+            <span class="text-lg">🧮</span>
+            <p id="lblCalcCard" class="text-xs font-bold mt-1">Kikokotoo cha Faida</p>
+            <p id="lblCalcSub" class="text-[10px] text-blue-200">Panga bei sahihi</p>
+          </button>
+          <button onclick="shareCatalog()" class="bg-emerald-800 text-white p-3.5 rounded-2xl text-left shadow-sm active:scale-95 transition">
+            <span class="text-lg">🛍️</span>
+            <p id="lblCatCard" class="text-xs font-bold mt-1">Katalogi WhatsApp</p>
+            <p id="lblCatSub" class="text-[10px] text-emerald-200">Tuma orodha ya bidhaa</p>
+          </button>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <h3 id="lblRecentOrders" class="font-bold text-slate-800 text-sm">Oda za Hivi Karibuni</h3>
+          <button onclick="switchTab('orders')" id="lblSeeAll" class="text-xs font-bold text-blue-800">Ona Zote →</button>
+        </div>
+        <div id="recentOrdersList" class="space-y-3"></div>
+      </section>
+
+      <!-- TAB 2: ORDERS -->
+      <section id="tab-orders" class="hidden space-y-3">
+        <input id="searchInput" oninput="renderAll()" type="text" placeholder="🔍 Tafuta / Search..." class="w-full p-3 rounded-xl border border-slate-200 bg-white text-sm outline-none" />
+        <div class="flex gap-2 overflow-x-auto hide-scroll pb-1">
+          <button onclick="setFilter('ALL')" id="fltAll" class="bg-blue-950 text-white px-3 py-1.5 rounded-full text-xs font-bold">Zote / All</button>
+          <button onclick="setFilter('PENDING')" id="fltPend" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full text-xs font-bold">Zinazosubiri / Pending</button>
+          <button onclick="setFilter('DEBT')" id="fltDebt" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full text-xs font-bold">Madeni / Unpaid</button>
+        </div>
+        <div id="allOrdersList" class="space-y-3"></div>
+      </section>
+
+      <!-- TAB 3: TOOLS & SAVINGS -->
+      <section id="tab-tools" class="hidden space-y-4">
+        <!-- Profit Calculator -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <h3 id="lblCalcTitle" class="font-bold text-slate-800 text-sm">🧮 Kikokotoo cha Bei & Faida</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="calcCost" oninput="calcProfit()" type="number" placeholder="Bei ya kununua / Cost" class="p-2.5 rounded-xl border text-xs" />
+            <input id="calcExp" oninput="calcProfit()" type="number" placeholder="Gharama / Expenses" class="p-2.5 rounded-xl border text-xs" />
+          </div>
+          <input id="calcMargin" oninput="calcProfit()" type="number" placeholder="Asilimia ya Faida (mf. 30%)" class="w-full p-2.5 rounded-xl border text-xs" />
+          <div class="bg-emerald-50 p-3 rounded-xl flex justify-between items-center text-xs font-bold text-emerald-900">
+            <span id="lblSuggestedPrice">Bei ya Kuuza:</span>
+            <span id="calcResult" class="text-sm">0</span>
+          </div>
+        </div>
+
+        <!-- Expenses & Savings -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <h3 id="lblExpTitle" class="font-bold text-slate-800 text-sm">💸 Rekodi Matumizi / Expenses</h3>
+          <input id="expTitle" type="text" placeholder="Maelezo / Description" class="w-full p-2.5 rounded-xl border text-xs" />
+          <input id="expAmount" type="number" placeholder="Kiasi / Amount" class="w-full p-2.5 rounded-xl border text-xs" />
+          <button onclick="addExpense()" id="btnSaveExp" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Hifadhi / Save</button>
+        </div>
+        <div id="expensesList" class="space-y-2"></div>
+      </section>
+
+      <!-- TAB 4: SETTINGS -->
+      <section id="tab-settings" class="hidden space-y-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <h3 id="lblBizSettings" class="font-bold text-slate-800 text-sm">🏪 Taarifa za Biashara / Business Profile</h3>
+          <input id="setBizName" type="text" placeholder="Jina la Duka / Shop Name" class="w-full p-3 rounded-xl border text-sm" />
+          <input id="setBizPhone" type="text" placeholder="Namba ya Malipo / Payment Number" class="w-full p-3 rounded-xl border text-sm" />
+          <button onclick="saveSettings()" id="btnSaveSet" class="w-full bg-blue-950 text-white font-bold py-3 rounded-xl text-sm">Hifadhi / Save Profile</button>
+        </div>
+        <div class="bg-gradient-to-r from-blue-950 to-emerald-900 text-white p-4 rounded-2xl space-y-2">
+          <h4 id="lblShareTitle" class="font-bold text-sm">🌍 Sambaza OdaSmart Duniani</h4>
+          <p id="lblShareSub" class="text-xs text-blue-100">Tuma link ya app hii kwa wafanyabiashara wengine bure.</p>
+          <button onclick="shareApp()" id="btnShareApp" class="w-full bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs">🔗 Tuma Link / Share App</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Floating Add Order Button -->
+    <button onclick="openModal()" class="fixed bottom-20 right-6 bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-2xl border-4 border-white active:scale-90 transition z-30">
+      +
+    </button>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 flex justify-around py-2.5 text-xs font-bold text-slate-400 z-20">
+      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-blue-950"><span>🏠</span><span id="navLblHome">Nyumbani</span></button>
